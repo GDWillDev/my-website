@@ -2,18 +2,118 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>GDdev </title>
+    <title>GDdev Home Page</title>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <style>
         body {
-            background-color: rgb(50, 50, 50)
+            background-color: rgb(70, 70, 70);
+            margin: 0;
+            padding: 0;
         }
+        p {
+            background-color: rgb(50,100,50);
+            height: 50%;
+            text-align: center;
+            padding: 10px;
+            line-height: 25px;
+        }
+        .full-width-div {
+            width: 100%;
+            background-color: #3498db;
+            color: white;
+            text-align: center;
+            padding: 20px 0; /* Adds vertical space, keeps width at 100% */
+            box-sizing: border-box; /*Ensures padding doesn't add extra width*/
+            }
     </style>
+
 </head>
 <body>
-
-    <h1>Hello, my name is Grant Dietzenbach</h1>
-
     
+    <h1>
+        <div style = "color: rgb(67, 167, 67); text-align: center;">
+            GD Will HomePage
+        </div> 
+    </h1>
+
+    <div style = "background-color: rgb(50,100,50); height: 50%; text-align: center; padding: 10px; line-height: 25px;" class = "full-width-div">
+            <p>
+                Hi! My name is GD Will. I am an early developer<br/>
+                who loves to sketch, read, and imagine. This is my<br/>
+                first website. I wanted to create a personal platform<br/>
+                where I can blog, share ideas, and network. I hope<br/>
+                you enjoy!
+            </p>
+    </div>
+
+    <div style="text-align: center;">
+        <a href="password.html" style ="color: aquamarine;">
+            Go to Editor Hub
+        </a>
+    </div>
+
+   <h1>
+      <div style = "color: white; background-color: rgb(67, 167, 67) ; text-align: center;">
+         Public Schedual Portal
+      </div> 
+   </h1>
+
+
+   <div style="background-color: rgb(80, 80, 80); text-align: center;"
+      <p>
+         [Schedual Content Goes Here. (Database required)]</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+
+   <h1>
+      <div style = "color: white; background-color: rgb(67, 167, 67) ; text-align: center;">
+         Public Blogging Viewer
+      </div> 
+   </h1>
+
+
+   <div style="background-color: rgb(80, 80, 80); text-align: center;"
+      <p>
+         [Blog Content Goes Here. (Database required)]</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
+-                                                                                                                  -</br>
 
 
 
@@ -22,3 +122,29 @@
 </body>
 
 </html>
+
+<!--
+------------------------------------------------------------------------------------------------------
+NOTE: This is some piece of code i found that might be able to pop up an alert that you can input the password from.
+
+
+<div id="popup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999;">
+    <div style="position:relative; top:50%; left:50%; transform:translate(-50%,-50%); background:#fff; padding:30px; border-radius:8px; min-width:300px;">
+       <p style="font-size:30pt;">Scheduling Hub</p>
+       <p>Only operators should access the hub</p>
+       <p>Password: <input id="passwordID" type="password" /></p>
+       <button onclick="document.getElementById('popup').style.display='none'">Close</button>
+    </div>
+</div>
+
+<script>
+    document.getElementById('passwordID').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && this.value === 'correctPassword') {
+        document.getElementById('popup').style.display = 'none';
+    }
+    });   
+</script>
+
+
+------------------------------------------------------------------------------------------------------
+-->
