@@ -1,0 +1,581 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Weekly Calendar</title>
+
+  <style>
+    /* ---------- 1. General page styling ---------- */
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: #202124;
+      background: #ffffff;
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+    }
+
+    /* ---------- 2. Overall layout ---------- */
+
+    .app {
+      display: grid;
+      grid-template-columns: 245px minmax(0, 1fr);
+      grid-template-rows: 72px minmax(0, 1fr);
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .toolbar {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 20px;
+      border-bottom: 1px solid #dadce0;
+    }
+
+    .brand {
+      font-size: 21px;
+      font-weight: 600;
+      margin-right: 18px;
+    }
+
+    .toolbar button,
+    .sidebar button {
+      background: white;
+      border: 1px solid #dadce0;
+      border-radius: 6px;
+      padding: 8px 12px;
+    }
+
+    .toolbar button:hover,
+    .sidebar button:hover {
+      background: #f1f3f4;
+    }
+
+    #weekTitle {
+      font-size: 19px;
+      font-weight: 500;
+      margin-left: 8px;
+    }
+
+    .toolbar-spacer {
+      flex: 1;
+    }
+
+    /* ---------- 3. Left sidebar ---------- */
+
+    .sidebar {
+      grid-row: 2;
+      padding: 20px 14px;
+      border-right: 1px solid #dadce0;
+      overflow-y: auto;
+    }
+
+    .create-button {
+      width: 100%;
+      padding: 13px !important;
+      border-radius: 24px !important;
+      background: #d3e3fd !important;
+      border: none !important;
+      font-weight: 600;
+      margin-bottom: 28px;
+    }
+
+    .sidebar h3 {
+      font-size: 14px;
+      margin: 22px 0 12px;
+    }
+
+    .sidebar p,
+    .sidebar label {
+      font-size: 14px;
+    }
+
+    .mini-calendar {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 4px;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .mini-calendar span {
+      padding: 6px 0;
+      border-radius: 50%;
+    }
+
+    .mini-calendar .mini-heading {
+      font-weight: bold;
+      color: #5f6368;
+    }
+
+    .mini-calendar .selected {
+      background: #1a73e8;
+      color: white;
+    }
+
+    .calendar-option {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 12px 0;
+    }
+
+    .calendar-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 3px;
+      background: #4285f4;
+    }
+
+    /* ---------- 4. Main calendar area ---------- */
+
+    .calendar {
+      grid-row: 2;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .day-headers {
+      display: grid;
+      grid-template-columns: 54px repeat(7, minmax(0, 1fr));
+      border-bottom: 1px solid #dadce0;
+      flex-shrink: 0;
+    }
+
+    .day-heading {
+      text-align: center;
+      padding: 12px 2px;
+      border-left: 1px solid #eeeeee;
+      font-size: 12px;
+      color: #5f6368;
+    }
+
+    .day-number {
+      display: block;
+      font-size: 23px;
+      margin-top: 6px;
+      color: #202124;
+    }
+
+    .day-heading.today .day-number {
+      background: #1a73e8;
+      color: white;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      line-height: 36px;
+      margin: 6px auto 0;
+    }
+
+    .time-grid {
+      display: grid;
+      grid-template-columns: 54px repeat(7, minmax(0, 1fr));
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    .time-labels,
+    .day-column {
+      position: relative;
+      height: 1440px;
+    }
+
+    .time-label {
+      height: 60px;
+      padding: 0 7px;
+      text-align: right;
+      font-size: 11px;
+      color: #70757a;
+      transform: translateY(-7px);
+    }
+
+    .day-column {
+      border-left: 1px solid #dadce0;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 59px,
+        #e8eaed 59px,
+        #e8eaed 60px
+      );
+    }
+
+    .day-column.today-column {
+      background-color: #f8fbff;
+    }
+
+    .event {
+      position: absolute;
+      left: 3px;
+      right: 3px;
+      padding: 5px 6px;
+      border-radius: 5px;
+      overflow: hidden;
+      font-size: 12px;
+      background: #d2e3fc;
+      border-left: 3px solid #4285f4;
+      color: #174ea6;
+    }
+
+    .event strong {
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .event small {
+      font-size: 11px;
+    }
+
+    /* ---------- 5. Smaller screens ---------- */
+
+    @media (max-width: 760px) {
+      .app {
+        grid-template-columns: 150px minmax(0, 1fr);
+      }
+
+      .brand {
+        display: none;
+      }
+
+      .toolbar {
+        gap: 5px;
+        padding: 0 8px;
+      }
+
+      #weekTitle {
+        font-size: 13px;
+      }
+
+      .sidebar {
+        padding: 12px 8px;
+      }
+
+      .day-headers,
+      .time-grid {
+        grid-template-columns: 42px repeat(7, minmax(95px, 1fr));
+      }
+
+      .time-grid {
+        overflow: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- TOP TOOLBAR -->
+    <header class="toolbar">
+      <span class="brand">My Calendar</span>
+
+      <button id="todayButton">Today</button>
+      <button id="previousWeek" aria-label="Previous week">←</button>
+      <button id="nextWeek" aria-label="Next week">→</button>
+
+      <h1 id="weekTitle">Loading week...</h1>
+
+      <span class="toolbar-spacer"></span>
+
+      <button id="addEvent">+ Event</button>
+    </header>
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar">
+      <button class="create-button" id="sidebarAdd">
+        + Create event
+      </button>
+
+      <h3 id="miniMonth">Calendar</h3>
+
+      <div class="mini-calendar">
+        <span class="mini-heading">S</span>
+        <span class="mini-heading">M</span>
+        <span class="mini-heading">T</span>
+        <span class="mini-heading">W</span>
+        <span class="mini-heading">T</span>
+        <span class="mini-heading">F</span>
+        <span class="mini-heading">S</span>
+
+        <span>1</span><span>2</span><span>3</span>
+        <span>4</span><span>5</span><span>6</span>
+        <span>7</span><span>8</span><span>9</span>
+        <span>10</span><span>11</span><span>12</span>
+        <span>13</span><span>14</span><span>15</span>
+        <span>16</span><span>17</span><span>18</span>
+        <span>19</span><span>20</span><span>21</span>
+        <span>22</span><span>23</span><span>24</span>
+        <span>25</span><span>26</span><span>27</span>
+        <span>28</span><span>29</span><span>30</span>
+        <span>31</span>
+      </div>
+
+      <h3>My calendars</h3>
+
+      <div class="calendar-option">
+        <span class="calendar-dot"></span>
+        <label>Personal</label>
+      </div>
+
+      <div class="calendar-option">
+        <span class="calendar-dot"
+          style="background: #34a853"></span>
+        <label>School</label>
+      </div>
+
+      <div class="calendar-option">
+        <span class="calendar-dot"
+          style="background: #fbbc04"></span>
+        <label>School</label>
+      </div>
+    </aside>
+
+    <!-- MAIN WEEKLY CALENDAR -->
+    <main class="calendar">
+
+      <div class="day-headers" id="dayHeaders">
+        <div></div>
+      </div>
+
+      <div class="time-grid" id="timeGrid">
+        <div class="time-labels" id="timeLabels"></div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    // ---------- 1. Store the calendar's data ----------
+
+    const dayNames = [
+      "Sunday", "Monday", "Tuesday", "Wednesday",
+      "Thursday", "Friday", "Saturday"
+    ];
+
+    const monthNames = [
+      "January", "February", "March", "April",
+      "May", "June", "July", "August",
+      "September", "October", "November", "December"
+    ];
+
+    let currentWeek = new Date();
+    let events = [];
+
+    // ---------- 2. Find the Sunday of a given week ----------
+
+    function getSunday(date) {
+      const sunday = new Date(date);
+      sunday.setHours(12, 0, 0, 0);
+      sunday.setDate(date.getDate() - date.getDay());
+      return sunday;
+    }
+
+    // ---------- 3. Create the hourly labels ----------
+
+    function renderTimeLabels() {
+      const container = document.getElementById("timeLabels");
+      container.innerHTML = "";
+
+      for (let hour = 0; hour < 24; hour++) {
+        const label = document.createElement("div");
+        label.className = "time-label";
+
+        const displayHour = hour % 12 || 12;
+        const suffix = hour < 12 ? "AM" : "PM";
+
+        label.textContent = `${displayHour} ${suffix}`;
+        container.appendChild(label);
+      }
+    }
+
+    // ---------- 4. Draw the seven days ----------
+
+    function renderCalendar() {
+      const sunday = getSunday(currentWeek);
+
+      const headers = document.getElementById("dayHeaders");
+      const grid = document.getElementById("timeGrid");
+      const title = document.getElementById("weekTitle");
+
+      headers.innerHTML = "<div></div>";
+      grid.innerHTML = '<div class="time-labels" id="timeLabels"></div>';
+
+      const start = new Date(sunday);
+      const end = new Date(sunday);
+      end.setDate(end.getDate() + 6);
+
+      title.textContent =
+        `${monthNames[start.getMonth()]} ${start.getDate()} – ` +
+        `${monthNames[end.getMonth()]} ${end.getDate()}, ${end.getFullYear()}`;
+
+      const today = new Date();
+
+      for (let i = 0; i < 7; i++) {
+        const date = new Date(sunday);
+        date.setDate(sunday.getDate() + i);
+
+        const isToday =
+          date.toDateString() === today.toDateString();
+
+        // Create the day heading.
+        const heading = document.createElement("div");
+        heading.className = "day-heading";
+        if (isToday) heading.classList.add("today");
+
+        heading.innerHTML =
+          `${dayNames[i].slice(0, 3)}` +
+          `<span class="day-number">${date.getDate()}</span>`;
+
+        headers.appendChild(heading);
+
+        // Create the column for this day.
+        const column = document.createElement("div");
+        column.className = "day-column";
+        if (isToday) column.classList.add("today-column");
+
+        column.dataset.date =
+          `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+        grid.appendChild(column);
+      }
+
+      renderTimeLabels();
+      renderEvents();
+    }
+
+    // ---------- 5. Put events at the correct time ----------
+
+    function renderEvents() {
+      document.querySelectorAll(".day-column").forEach(column => {
+        column.innerHTML = "";
+
+        const columnDate = column.dataset.date;
+
+        events
+          .filter(event => event.date === columnDate)
+          .forEach(event => {
+            const block = document.createElement("div");
+            block.className = "event";
+
+            // Each hour is 60 pixels tall.
+            block.style.top = `${event.start * 60}px`;
+            block.style.height = `${event.duration * 60}px`;
+
+            const name = document.createElement("strong");
+            name.textContent = event.title;
+
+            const time = document.createElement("small");
+            time.textContent = formatHour(event.start);
+
+            block.append(name, time);
+            column.appendChild(block);
+          });
+      });
+    }
+
+    function formatHour(hour) {
+      const displayHour = hour % 12 || 12;
+      return `${displayHour}:00 ${hour < 12 ? "AM" : "PM"}`;
+    }
+
+    // ---------- 6. Add a new event ----------
+
+    function addNewEvent() {
+      const title = prompt("What is the event called?");
+      if (!title || !title.trim()) return;
+
+      const dayAnswer = prompt(
+        "Choose a day: 0 = Sunday, 1 = Monday, ... 6 = Saturday"
+      );
+
+      if (dayAnswer === null || dayAnswer.trim() === "") return;
+
+      const day = Number(dayAnswer);
+
+      if (!Number.isInteger(day) || day < 0 || day > 6) {
+        alert("Please enter a number from 0 to 6.");
+        return;
+      }
+
+      const hourAnswer = prompt(
+        "Enter the starting hour from 0 to 23. Example: 14 = 2 PM."
+      );
+
+      if (hourAnswer === null || hourAnswer.trim() === "") return;
+
+      const start = Number(hourAnswer);
+
+      if (!Number.isInteger(start) || start < 0 || start > 23) {
+        alert("Please enter a whole number from 0 to 23.");
+        return;
+      }
+
+      const sunday = getSunday(currentWeek);
+      const eventDate = new Date(sunday);
+      eventDate.setDate(sunday.getDate() + day);
+
+      const dateString =
+        `${eventDate.getFullYear()}-${String(eventDate.getMonth() + 1).padStart(2, "0")}-${String(eventDate.getDate()).padStart(2, "0")}`;
+
+      events.push({
+        title: title.trim(),
+        date: dateString,
+        start: start,
+        duration: 1
+      });
+
+      renderEvents();
+    }
+
+    // ---------- 7. Make the buttons work ----------
+
+    document.getElementById("previousWeek").addEventListener(
+      "click", () => {
+        currentWeek.setDate(currentWeek.getDate() - 7);
+        renderCalendar();
+      }
+    );
+
+    document.getElementById("nextWeek").addEventListener(
+      "click", () => {
+        currentWeek.setDate(currentWeek.getDate() + 7);
+        renderCalendar();
+      }
+    );
+
+    document.getElementById("todayButton").addEventListener(
+      "click", () => {
+        currentWeek = new Date();
+        renderCalendar();
+      }
+    );
+
+    document.getElementById("addEvent").addEventListener(
+      "click", addNewEvent
+    );
+
+    document.getElementById("sidebarAdd").addEventListener(
+      "click", addNewEvent
+    );
+
+    // ---------- 8. Start the calendar ----------
+
+    renderCalendar();
+  </script>
+</body>
+</html>
