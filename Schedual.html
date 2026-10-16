@@ -3,28 +3,47 @@
 <head>
    <title>GDdev Schedual</title>
    <style>
-        body {
-            background-color: rgb(70, 70, 70);
-            margin: 0;
-            padding: 0;
-        }
+      body {
+         background-color: rgb(70, 70, 70);
+         margin: 0;
+         padding: 0;
+      }
+      .grid-container {
+         display:grid;
+         grid-template-columns: 150px 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+         grid-template-rows: 800px;
+         background-color: rgb(60, 60, 60);
+         color: rgb(200, 200, 200);
+         text-align: center;
+      }
+      .taskmenu {
+         display:grid;
+         grid-template-rows: 1fr;
+      }
+      .task {
+         display: grid;
+         background-color: rgb(50, 50, 50);
+         text-align: center;
+         padding: 2em;
+      }
+
+
+
     </style>
-
+    
 </head>
-<body>
-   <h1>
-      <div style = "color: white; background-color: rgb(67, 167, 67) ; text-align: center;">
-         Schedual Portal
-      </div> 
-   </h1>
 
-   <div style="background-color: rgb(80, 80, 80); text-align: center;"
-      <div style ="background-color: rgb(67, 120, 50); width: 5%">
-         <p>
-            Day of Week:<br/>
-            Monday
-         </p>
-      </div>
+<body>
+   <div class="grid-container">
+      <div class="taskmenu">Tasks</div>
+      <div class="task">Monday</div>
+      <div class="task">Tuesday</div>
+      <div class="task">Wednesday</div>
+      <div class="task">Thursday</div>
+      <div class="task">Friday</div>
+      <div class="task">Saturday</div>
+      <div class="task">Sunday</div>
+   </div>
 
 
 
