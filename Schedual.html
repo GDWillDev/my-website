@@ -10,6 +10,9 @@
       }
       .grid-container {
          display:grid;
+         position: relative;
+         z-index: -1;
+         grid-row: 1 / 2;
          grid-template-columns: 150px 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
          grid-template-rows: 800px;
          background-color: rgb(60, 60, 60);
@@ -17,54 +20,78 @@
          text-align: center;
       }
       .taskmenu {
-         display:grid;
+         display: grid;
+         text-align: center;
          grid-template-rows: 1fr;
       }
       .task {
          display: grid;
-         background-color: rgb(50, 50, 50);
+         background-color: rgb(56, 56, 56);
          text-align: center;
          margin-top: 100px;
-         padding: 2em;
+         padding: .5em;
+         border: 1px solid rgb(100, 100, 100);
+
+         font-weight: bold;
+         font-size: 15pt;
       }
       .tool-bar {
          display: grid;
-         
+         position: absolute;
+         z-index: 1;
+         grid-column: 2 / 3;
+         grid-row: 1 / 2;
          justify-content: center;
-         background-color: rgb(20, 20, 20);
+         background-color: rgb(16, 99, 0);
          height: 100px;
+         width: calc(100% - 150px);
          margin-left: 150px;
       }
 
-
+      @media screen and (max-width: 800px) {
+         .grid-container {
+            grid-template-columns: 1fr;
+            grid-template-rows: 100px 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+         }
+         .tool-bar {
+            grid-column: 1 / 2;
+            grid-row: 1 / 2;
+            width: calc(100%);
+            margin-left: 0px;
+         }
+      }
 
     </style>
     
 </head>
 
 <body>
+   <div class="tool-bar">Schedualing Hub: <a href = "index.html" style ="color: aquamarine">Go Back to Main Page</a></div>
    <div class="grid-container">
-      <div class="taskmenu">Tasks</div>
-      <div class="task">Monday</div>
-      <div class="task">Tuesday</div>
-      <div class="task">Wednesday</div>
-      <div class="task">Thursday</div>
-      <div class="task">Friday</div>
-      <div class="task">Saturday</div>
-      <div class="task">Sunday</div>
-   </div>
-   <div class="tool-bar">Schedualing Hub</div>
+      <div class="taskmenu">Tasks:<br/>
+      
+      </div>
+      <div class="task">Monday
 
+      </div>
+      <div class="task">Tuesday
 
+      </div>
+      <div class="task">Wednesday
 
+      </div>
+      <div class="task">Thursday
 
-   
-   
-   </div>
-   <div style ="text-align: center;">
-      <a href = "index.html" style ="color: aquamarine">
-         Go Back to Main Page
-      </a>
+      </div>
+      <div class="task">Friday
+
+      </div>
+      <div class="task">Saturday
+
+      </div>
+      <div class="task">Sunday
+         
+      </div>
    </div>
 
 </body>
