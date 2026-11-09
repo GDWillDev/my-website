@@ -371,70 +371,72 @@
 </style>
 </head>
 <body>
-<div class="wrap">
+<div>
+  <div class="wrap">
 
-  <header>
-    <h1>GDdev Booking</h1>
-    <p class="sub">Pick an open slot and it’s yours.</p>
-  </header>
+    <header>
+      <h1>GDdev Booking</h1>
+      <p class="sub">Pick an open slot and it’s yours.</p>
+    </header>
 
-  <div class="modes">
-    <button class="mode-btn" id="mVisitor" aria-pressed="true">Visitor — book a slot</button>
-    <button class="mode-btn" id="mOwner" aria-pressed="false">Owner — block my time</button>
-  </div>
-
-  <p class="hint" id="hint"></p>
-
-  <details class="settings">
-    <summary>Working hours and slot length</summary>
-    <div class="settings-body">
-      <div>
-        <label for="dayStart">Day starts</label>
-        <input type="time" id="dayStart" value="09:00">
-      </div>
-      <div>
-        <label for="dayEnd">Day ends</label>
-        <input type="time" id="dayEnd" value="17:00">
-      </div>
-      <div>
-        <label for="slotLen">Slot length</label>
-        <select id="slotLen">
-          <option value="15">15 minutes</option>
-          <option value="30" selected>30 minutes</option>
-          <option value="60">60 minutes</option>
-        </select>
-      </div>
+    <div class="modes">
+      <button class="mode-btn" id="mVisitor" aria-pressed="true">Visitor — book a slot</button>
+      <button class="mode-btn" id="mOwner" aria-pressed="false">Owner — block my time</button>
     </div>
-  </details>
 
-<!-- /* This html part of the code creates the calender(cal) */ -->
-  <div class="scroller">
-    <table class="cal" id="cal"></table>
-  </div>
+    <p class="hint" id="hint"></p>
 
-  <div class="legend">
-    <span><span class="key" style="background:var(--surface);border:1px solid var(--line)"></span>Free</span>
-    <span><span class="key" style="background:var(--busy)"></span>Booked by someone</span>
-    <span><span class="key" style="background:var(--mine)"></span>My own commitment</span>
-  </div>
+    <details class="settings">
+      <summary>Working hours and slot length</summary>
+      <div class="settings-body">
+        <div>
+          <label for="dayStart">Day starts</label>
+          <input type="time" id="dayStart" value="09:00">
+        </div>
+        <div>
+          <label for="dayEnd">Day ends</label>
+          <input type="time" id="dayEnd" value="17:00">
+        </div>
+        <div>
+          <label for="slotLen">Slot length</label>
+          <select id="slotLen">
+            <option value="15">15 minutes</option>
+            <option value="30" selected>30 minutes</option>
+            <option value="60">60 minutes</option>
+          </select>
+        </div>
+      </div>
+    </details>
 
-  <section class="list">
-    <h2>Everything booked</h2>
-    <div id="list"></div>
-  </section>
-
-  <footer>
-    <p>Bookings are saved in this browser only. Nothing is sent anywhere.
-       Use Export to save a copy, or to move them to another device.</p>
-    <div class="tools">
-      <button id="exportBtn">Export</button>
-      <button id="importBtn">Import</button>
-      <button id="sampleBtn">Load sample week</button>
-      <button id="clearBtn">Clear everything</button>
-      <button id="themeBtn">Light / dark</button>
+  <!-- /* This html part of the code creates the calender(cal) */ -->
+    <div class="scroller">
+      <table class="cal" id="cal"></table>
     </div>
-  </footer>
 
+    <div class="legend">
+      <span><span class="key" style="background:var(--surface);border:1px solid var(--line)"></span>Free</span>
+      <span><span class="key" style="background:var(--busy)"></span>Booked by someone</span>
+      <span><span class="key" style="background:var(--mine)"></span>My own commitment</span>
+    </div>
+
+    <section class="list">
+      <h2>Everything booked</h2>
+      <div id="list"></div>
+    </section>
+
+    <footer>
+      <p>Bookings are saved in this browser only. Nothing is sent anywhere.
+        Use Export to save a copy, or to move them to another device.</p>
+      <div class="tools">
+        <button id="exportBtn">Export</button>
+        <button id="importBtn">Import</button>
+        <button id="sampleBtn">Load sample week</button>
+        <button id="clearBtn">Clear everything</button>
+        <button id="themeBtn">Light / dark</button>
+      </div>
+    </footer>
+
+  </div>
 </div>
 
 <dialog id="dlg">
