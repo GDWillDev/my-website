@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GDdev Booking</title>
+
+<!-- ======================================================================
+     START HERE
+     ======================================================================
+
+     Hello. This is a working website. You can open it right now by
+     double-clicking the file, and it works before you change anything.
+
+     The whole site is this ONE file. That is unusual for real websites,
+     but it is much easier to learn from, because everything is in front
+     of you.
+
+     THE FILE HAS THREE PARTS, in this order:
+
+        1. <style> ... </style>      <- what it LOOKS like   (CSS)
+        2. <body> ... </body>        <- what is ON the page  (HTML)
+        3. <script> ... </script>    <- what it DOES         (JavaScript)
+
+     Three different languages in one file. That is normal for a web page.
+
+     ----------------------------------------------------------------
+     HOW TO WORK ON THIS
+     ----------------------------------------------------------------
+
+        1. Open the file in a text editor (VS Code, or even Notepad)
+        2. Open the SAME file in a browser by double-clicking it
+        3. Change something, SAVE, then REFRESH the browser
+
+     That is the whole loop: edit, save, refresh. You will do it hundreds
+     of times.
+
+     ----------------------------------------------------------------
+     EASY CHANGES TO TRY FIRST — in this order
+     ----------------------------------------------------------------
+
+     Do these before you try to understand anything else. Each one takes
+     about ten seconds, and seeing the page change is how this starts to
+     feel real.
+
+     1. THE TITLE AT THE TOP OF THE PAGE
+        Search for:  <h1>Book Time With Me</h1>
+        Change the words between the tags. Save. Refresh.
+
+     2. THE LINE UNDER THE TITLE
+        Search for:  Pick an open slot
+        Change that sentence to whatever you like.
+
+     3. THE MAIN COLOUR
+        Search for:  --accent: #2c5f2d;
+        Change it to  #1a4f8a  for blue, or  #7a2d6b  for purple.
+        Notice that ONE change recolours buttons, headings and borders
+        all at once. That is why the colours are defined in one place.
+
+     4. THE DAYS OF THE WEEK
+        Search for:  const DAYS = ["Monday",
+        Add "Saturday" to the end of that list. Save. Refresh.
+        A whole new column appears. You did not touch the grid code —
+        the grid builds itself from that list.
+
+     5. THE TAB NAME
+        That is the <title> line just above this comment.
+
+     ----------------------------------------------------------------
+     WHAT CHANGES WHAT — a map
+     ----------------------------------------------------------------
+
+     If you want to change...        ...look for
+
+     the colours                     :root {  near the top of <style>
+     the heading text                <h1> and <p class="sub"> in <body>
+     the days shown                  const DAYS = [...]  in <script>
+     the default working hours       value="09:00" and value="17:00"
+     the slot length options         <select id="slotLen">
+     the wording on the buttons      the <button> lines in <body>
+     the sample week                 the sampleBtn section near the end
+     what counts as a clash          the overlaps() function
+
+     ----------------------------------------------------------------
+     RULES THAT WILL SAVE YOU PAIN
+     ----------------------------------------------------------------
+
+     * Change ONE thing at a time, then save and refresh. If you change
+       five things and the page breaks, you will not know which one did it.
+
+     * Keep a working copy. Before a big change, duplicate the file and
+       name it something like  booking-site-WORKING.html  so you can
+       always get back.
+
+     * If the page goes blank or stops responding, you probably deleted
+       a  }  or a  "  somewhere. Press F12 in the browser, click the
+       Console tab, and read the red error. It tells you the line number.
+
+     * Every opening thing needs its closing partner:
+          <div> needs </div>        { needs }        " needs "
+
+     ====================================================================== -->
+<style>
+  /* ===================================================================
+     COLOURS AND SIZES — everything the page uses is defined once here.
+     Change a value and it changes everywhere.
+     =================================================================== */
+  :root {
+    color-scheme: light;
+    --bg: #f6f7f4;
+    --surface: #ffffff;
+    --surface-2: #eef1ea;
+    --ink: #1d241e;
+    --ink-soft: #5f6b61;
+    --line: #d8ded5;
+    --accent: #2c5f2d;
+    --accent-soft: #e4ede0;
+    --busy: #2c5f2d;
+    --mine: #8a6a2f;
+    --danger: #a33a3a;
+    --radius: 10px;
+
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #14170f;
+      --surface: #1c2018;
+      --surface-2: #252a20;
+      --ink: #e8ece3;
+      --ink-soft: #9aa694;
+      --line: #343b2c;
+      --accent: #97bc62;
+      --accent-soft: #2a3321;
+      --busy: #6f9148;
+      --mine: #c2a152;
+      --danger: #d4766e;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #14170f;
+    --surface: #1c2018;
+    --surface-2: #252a20;
+    --ink: #e8ece3;
+    --ink-soft: #9aa694;
+    --line: #343b2c;
+    --accent: #97bc62;
+    --accent-soft: #2a3321;
+    --busy: #6f9148;
+    --mine: #c2a152;
+    --danger: #d4766e;
+  }
+
+  *, *::before, *::after { box-sizing: inherit; }
+
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+                 Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  .wrap { max-width: 980px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+
+  header { margin-bottom: 1.5rem; }
+
+  h1 {
+    font-family: ui-serif, Georgia, "Times New Roman", serif;
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    margin: 0 0 .25rem;
+    color: var(--accent);
+  }
+
+  .sub { color: var(--ink-soft); margin: 0; font-size: .95rem; }
+
+  /* --- mode switch --- */
+  .modes { display: flex; gap: .5rem; margin: 1.25rem 0; flex-wrap: wrap; }
+
+  /* --- mode buttons (visitor/owner) --- */
+  .mode-btn {
+    flex: 1 1 auto;
+    min-width: 140px;
+    padding: .6rem 1rem;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    border-radius: var(--radius);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .mode-btn[aria-pressed="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  :root[data-theme="dark"] .mode-btn[aria-pressed="true"],
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .mode-btn[aria-pressed="true"] {
+      color: #14170f;
+    }
+  }
+
+  .hint {
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    padding: .7rem .9rem;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-size: .9rem;
+    margin-bottom: 1.25rem;
+    color: var(--ink);
+  }
+
+  /* --- settings --- */
+  details.settings {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    margin-bottom: 1.25rem;
+  }
+
+  details.settings > summary {
+    padding: .7rem .9rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: .92rem;
+  }
+
+  .settings-body {
+    padding: 0 .9rem .9rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
+
+  label { display: block; font-size: .8rem; color: var(--ink-soft); margin-bottom: .2rem; }
+
+  input, select, textarea {
+    font: inherit;
+    padding: .45rem .55rem;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: var(--surface);
+    color: var(--ink);
+    max-width: 100%;
+  }
+
+  /* --- the grid --- */
+  .scroller { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  table.cal {
+    border-collapse: separate;
+    border-spacing: 2px;
+    width: 100%;
+    min-width: 620px;
+  }
+
+  table.cal th {
+    font-size: .8rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--ink-soft);
+    padding: .3rem;
+    font-weight: 600;
+  }
+
+  th.timecol { width: 76px; text-align: right; padding-right: .5rem; }
+
+  td.timelabel {
+    font-size: .74rem;
+    color: var(--ink-soft);
+    text-align: right;
+    padding-right: .5rem;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  td.slot { padding: 0;}
+
+  .slot-lanes {
+    display: flex;
+    gap: 2px;
+    width: 100%;
+  }
+
+  .slot-lanes .cell {
+    flex: 1;
+    min-width: 0;
+  }
+
+/* The 'cell' seems to be defining each calender time slot */
+  .cell {
+    width: 100%;
+    min-height: 34px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+    font-size: .74rem;
+    cursor: pointer;
+    padding: .2rem .35rem;
+    text-align: left;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    line-height: 1.25;
+    overflow: hidden;
+  }
+
+  .cell:hover { border-color: var(--accent); }
+
+  .cell.busy {
+    background: var(--busy);
+    border-color: var(--busy);
+    color: #fff;
+    font-weight: 600;
+    cursor: default;
+  }
+
+  .cell.own {
+    background: var(--mine);
+    border-color: var(--mine);
+    color: #241c08;
+    font-weight: 600;
+  }
+  
+  .cell.own.double {
+    display: flex;
+    background: var(--mine);
+    border-color: var(--mine);
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .cell.cont { opacity: .82; }
+
+  /* --- list --- */
+  .list { margin-top: 2rem; }
+
+  h2 {
+    font-family: ui-serif, Georgia, serif;
+    font-size: 1.2rem;
+    color: var(--accent);
+    margin: 0 0 .75rem;
+  }
+
+  .item {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--busy);
+    border-radius: var(--radius);
+    padding: .6rem .8rem;
+    margin-bottom: .5rem;
+    display: flex;
+    justify-content: space-between;
+    gap: .75rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .item.own { border-left-color: var(--mine); }
+
+  .item .when { font-size: .8rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  .item .what { font-weight: 600; }
+
+  .x {
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--danger);
+    border-radius: 6px;
+    padding: .25rem .5rem;
+    cursor: pointer;
+    font: inherit;
+    font-size: .78rem;
+  }
+
+  .empty { color: var(--ink-soft); font-style: italic; font-size: .9rem; }
+
+  /* --- dialog --- */
+  dialog {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--ink);
+    padding: 0;
+    max-width: 380px;
+    width: calc(100% - 2rem);
+  }
+
+  dialog::backdrop { background: rgba(0,0,0,.45); }
+
+  .dlg-body { padding: 1.1rem; }
+
+  .dlg-body h3 {
+    margin: 0 0 .2rem;
+    font-family: ui-serif, Georgia, serif;
+    color: var(--accent);
+  }
+
+  .dlg-when { color: var(--ink-soft); font-size: .85rem; margin: 0 0 1rem; }
+
+  .field { margin-bottom: .75rem; }
+  .field input, .field select { width: 100%; }
+
+  .row { display: flex; gap: .5rem; }
+  .row > * { flex: 1; }
+
+  .actions { display: flex; gap: .5rem; margin-top: 1rem; }
+
+  .btn {
+    flex: 1;
+    padding: .55rem;
+    border-radius: 7px;
+    border: 1px solid var(--line);
+    background: var(--surface-2);
+    color: var(--ink);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .err {
+    color: var(--danger);
+    font-size: .85rem;
+    min-height: 1.2em;
+    margin: .4rem 0 0;
+  }
+
+  footer {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+    font-size: .82rem;
+    color: var(--ink-soft);
+  }
+
+  .tools { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .75rem; }
+
+  .tools button {
+    font: inherit;
+    font-size: .8rem;
+    padding: .4rem .7rem;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    border-radius: 7px;
+    cursor: pointer;
+  }
+
+  .legend { display: flex; gap: 1rem; font-size: .78rem; color: var(--ink-soft); margin-top: .75rem; flex-wrap: wrap; }
+  .key { display: inline-block; width: 11px; height: 11px; border-radius: 3px; vertical-align: -1px; margin-right: .3rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>GDdev Booking</h1>
+    <p class="sub">Pick an open slot and it’s yours.</p>
+  </header>
+
+  <div class="modes">
+    <button class="mode-btn" id="mVisitor" aria-pressed="true">Visitor — book a slot</button>
+    <button class="mode-btn" id="mOwner" aria-pressed="false">Owner — block my time</button>
+  </div>
+
+  <p class="hint" id="hint"></p>
+
+  <details class="settings">
+    <summary>Working hours and slot length</summary>
+    <div class="settings-body">
+      <div>
+        <label for="dayStart">Day starts</label>
+        <input type="time" id="dayStart" value="09:00">
+      </div>
+      <div>
+        <label for="dayEnd">Day ends</label>
+        <input type="time" id="dayEnd" value="17:00">
+      </div>
+      <div>
+        <label for="slotLen">Slot length</label>
+        <select id="slotLen">
+          <option value="15">15 minutes</option>
+          <option value="30" selected>30 minutes</option>
+          <option value="60">60 minutes</option>
+        </select>
+      </div>
+    </div>
+  </details>
+
+<!-- /* This html part of the code creates the calender(cal) */ -->
+  <div class="scroller">
+    <table class="cal" id="cal"></table>
+  </div>
+
+  <div class="legend">
+    <span><span class="key" style="background:var(--surface);border:1px solid var(--line)"></span>Free</span>
+    <span><span class="key" style="background:var(--busy)"></span>Booked by someone</span>
+    <span><span class="key" style="background:var(--mine)"></span>My own commitment</span>
+  </div>
+
+  <section class="list">
+    <h2>Everything booked</h2>
+    <div id="list"></div>
+  </section>
+
+  <footer>
+    <p>Bookings are saved in this browser only. Nothing is sent anywhere.
+       Use Export to save a copy, or to move them to another device.</p>
+    <div class="tools">
+      <button id="exportBtn">Export</button>
+      <button id="importBtn">Import</button>
+      <button id="sampleBtn">Load sample week</button>
+      <button id="clearBtn">Clear everything</button>
+      <button id="themeBtn">Light / dark</button>
+    </div>
+  </footer>
+
+</div>
+
+<dialog id="dlg">
+  <form method="dialog" class="dlg-body" id="dlgForm">
+    <h3 id="dlgTitle">Book this time with me</h3>
+    <p class="dlg-when" id="dlgWhen"></p>
+
+    <div class="field">
+      <label for="who">Your name</label>
+      <input id="who" required maxlength="40" autocomplete="off">
+    </div>
+
+    <div class="field">
+      <label for="what">What is it for</label>
+      <input id="what" maxlength="60" autocomplete="off">
+    </div>
+
+    <div class="field row">
+      <div>
+        <label for="startT">From</label>
+        <input type="time" id="startT">
+      </div>
+      <div>
+        <label for="endT">Until</label>
+        <input type="time" id="endT">
+      </div>
+    </div>
+
+    <p class="err" id="err"></p>
+
+    <div class="actions">
+      <button type="button" class="btn" id="cancelBtn">Cancel</button>
+      <button type="submit" class="btn primary" id="confirmBtn">Book it</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+/* ======================================================================
+   PART 3 OF 3 — JAVASCRIPT: what the page DOES
+
+   HTML puts things on the page. CSS makes them look right.
+   JavaScript is what makes them respond when you click.
+
+   This first section is the "engine" — the part that does the thinking.
+   It works out what time it is, whether two bookings clash, and where
+   the free gaps are. It does not touch the page at all.
+
+   Keeping the thinking separate from the drawing is deliberate. You can
+   change how the page looks without breaking the thinking, and fix the
+   thinking without breaking the look.
+   ====================================================================== */
+
+/* The days shown as columns. ADD OR REMOVE DAYS HERE — the grid builds
+   itself from this list, so adding "Saturday" is all you need to do. */
+const DAYS = ["Monday","Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+/* ---- Times are stored as NUMBERS, not text ----------------------------
+
+   A time like 2:30 PM is stored as 870, which is how many minutes have
+   passed since midnight (14 * 60 + 30).
+
+   Why not just store "2:30 PM"? Because comparing text does not work:
+
+       "2:30 PM" < "10:00 AM"   is TRUE, because "2" comes before "1"
+
+   The computer has no idea those are times. It is just comparing letters.
+   Once everything is a number, comparing and sorting just work.        */
+
+function toMinutes(hour, minute = 0) {
+  return hour * 60 + minute;
+}
+
+/* formats minutes into a standard time*/
+function toTimeString(minutes) {
+  const hour = Math.floor(minutes / 60);
+  const minute = minutes % 60;
+  let displayHour, suffix;
+  if (hour === 0)        { displayHour = 12;       suffix = "AM"; }
+  else if (hour < 12)    { displayHour = hour;     suffix = "AM"; }
+  else if (hour === 12)  { displayHour = 12;       suffix = "PM"; }
+  else                   { displayHour = hour - 12; suffix = "PM"; }
+  return displayHour + ":" + String(minute).padStart(2, "0") + " " + suffix;
+}
+
+/* "09:30" from an <input type="time"> -> 570 */
+function parseInputTime(text) {
+  const parts = String(text).split(":");
+  if (parts.length !== 2) return null;
+  const h = parseInt(parts[0], 10);
+  const m = parseInt(parts[1], 10);
+  if (isNaN(h) || isNaN(m)) return null;
+  if (h < 0 || h > 23 || m < 0 || m > 59) return null;
+  return toMinutes(h, m);
+}
+
+function toInputTime(minutes) {
+  const h = String(Math.floor(minutes / 60)).padStart(2, "0");
+  const m = String(minutes % 60).padStart(2, "0");
+  return h + ":" + m;
+}
+
+/* ---- THE MOST IMPORTANT FUNCTION IN THE WHOLE FILE -------------------
+
+   "Do these two time ranges clash?"
+
+   Most people start by writing four or five if statements — one starts
+   inside the other, one contains the other, and so on — and get one of
+   the cases wrong.
+
+   There is a much shorter way. Instead of asking when they DO clash,
+   ask when they DON'T. Two ranges miss each other only if one finishes
+   before the other starts. There are exactly two ways that can happen.
+
+   So they clash when NEITHER of those is true. That is this one line.
+
+   NOTE the < signs. 9:00-10:00 and 10:00-11:00 do not clash — they just
+   touch. If you changed < to <= then touching would count as a clash,
+   and nobody could book right after anything else. Try it and see.   */
+
+function overlaps(startA, endA, startB, endB) {
+  return startA < endB && startB < endA;
+}
+
+function createsOverlap(bookings, day, start, end) {
+  const relevant = bookings.filter(b => b.day === day && overlaps(start, end, b.start, b.end));
+  for (let i = 0; i < relevant.length; i++) {
+    for (let j = i + 1; j < relevant.length; j++) {
+      const a = relevant[i];
+      const b = relevant[j];
+      const sharedStart = Math.max(a.start, b.start);
+      const sharedEnd = Math.min(a.end, b.end);
+      if (
+        sharedStart < sharedEnd && overlaps(start, end, sharedStart, sharedEnd)
+      ) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+function generateSlots(dayStart, dayEnd, slotLength) {
+  const slots = [];
+  let start = dayStart;
+  while (start + slotLength <= dayEnd) {
+    slots.push([start, start + slotLength]);
+    start = start + slotLength;
+  }
+  return slots;
+}
+
+function isFree(bookings, day, start, end) {
+  for (const b of bookings) {
+    if (b.day !== day) continue;
+    if (overlaps(start, end, b.start, b.end)) return false;
+  }
+  return true;
+}
+
+function findClash(bookings, day, start, end) {
+  for (const b of bookings) {
+    if (b.day !== day) continue;
+    if (overlaps(start, end, b.start, b.end)) return b;
+  }
+  return null;
+}
+
+// function findDouble(bookings, day, start, end) {
+//   for (const b of bookings) {
+//     /*if (b.day !== day) continue;*/
+//     if (overlaps(start, end, b.start, b.end)) return b;
+//   }
+//   return null;
+// }
+
+function sortBookings(bookings) {
+  const result = bookings.slice();
+  for (let i = 0; i < result.length; i++) {
+    let smallest = i;
+    for (let j = i + 1; j < result.length; j++) {
+      if (result[j].start < result[smallest].start) smallest = j;
+    }
+    const tmp = result[i];
+    result[i] = result[smallest];
+    result[smallest] = tmp;
+  }
+  return result;
+}
+
+function bookingsOn(bookings, day) {
+  return sortBookings(bookings.filter(b => b.day === day));
+}
+
+function assignLanes(bookings, day) {
+  const today = bookingsOn(bookings, day);
+  const laneEnds = [-Infinity, -Infinity];
+  const lanes = new Map();
+  for (const b of today) {
+    if (b.start >= laneEnds[0]) {
+      lanes.set(b.id, 0);
+      laneEnds[0] = b.end;
+    }
+    else if (b.start >= laneEnds[1]) {
+      lanes.set(b.id, 1);
+      laneEnds[1] = b.end;
+    }
+  }
+  return lanes;
+}
+
+
+/* ---- Finding the gaps ------------------------------------------------
+
+   Given a day with some bookings in it, where is the free time?
+
+   Walk through the day's bookings in order, keeping a marker for how
+   far through the day you have got:
+
+       9:00                                          5:00
+       |---- free ----[booked]--- free ---[booked]----|
+                      ^      ^
+                   the marker jumps to the end of each booking
+
+   Any space between the marker and the next booking is free time.
+   After the last booking, whatever is left is free too.               */
+
+function freeBlocks(bookings, day, dayStart, dayEnd) {
+  const blocks = [];
+  let marker = dayStart;
+  for (const b of bookingsOn(bookings, day)) {
+    if (b.start > marker) blocks.push([marker, b.start]);
+    if (b.end > marker) marker = b.end;
+  }
+  if (marker < dayEnd) blocks.push([marker, dayEnd]);
+  return blocks;
+}
+
+/* ---- Trying to add a booking -----------------------------------------
+
+   Returns two things: whether it worked, and if not, WHY not.
+
+   Giving a reason instead of just "no" is what lets the page tell the
+   person something useful. "Clashes with Alex, 10:00 AM to 11:00 AM"
+   is far better than "Error".
+
+   The checks are in order from cheapest to most expensive. There is no
+   point hunting through every booking for a clash if the times were
+   backwards to begin with.                                            */
+
+function book(bookings, day, start, end, who, what, owner, dayStart, dayEnd) {
+  if (!DAYS.includes(day)) return [false, "That is not a working day."];
+  if (!who || !who.trim()) return [false, "Please put a name in."];
+  if (start === null || end === null) return [false, "Those times do not make sense."];
+  if (start >= end) return [false, "The end has to be after the start."];
+  if (start < dayStart || end > dayEnd) {
+    return [false, "That is outside working hours (" +
+            toTimeString(dayStart) + " to " + toTimeString(dayEnd) + ")."];
+  }
+  // const clash = findClash(bookings, day, start, end);
+  if (createsOverlap(bookings, day, start, end)) {
+    return [false, "Already has two overlapped bookings."];
+  }
+  bookings.push({
+    id: Date.now() + "-" + Math.random().toString(36).slice(2, 7),
+    day, start, end,
+    who: who.trim(),
+    what: (what || "").trim(),
+    owner: !!owner
+  });
+  return [true, ""];
+}
+
+/* ======================================================================
+   REMEMBERING THINGS
+
+   "state" holds everything the page currently knows: the bookings, the
+   working hours, the slot length.
+
+   save() and load() put it in localStorage, which is a small storage
+   box the browser keeps for each website.
+
+   IMPORTANT LIMITATION, and you should say this when you present:
+   localStorage lives in ONE browser on ONE device. If a friend opens
+   your site, they see an empty calendar — they are not seeing yours.
+   That is why the Export button exists.
+
+   Making it truly shared needs a server and a database, which is a
+   bigger project. This is a working demo, and that is a fine thing
+   to be, as long as you can say clearly what it does and does not do.
+   ====================================================================== */
+
+const KEY = "booking-calendar-v1";
+
+let state = {
+  bookings: [],
+  dayStart: toMinutes(9),
+  dayEnd: toMinutes(17),
+  slotLength: 30
+};
+
+let mode = "visitor";
+let pending = null;
+
+function save() {
+  try {
+    localStorage.setItem(KEY, JSON.stringify(state));
+  } catch (e) {
+    /* storage can be unavailable or full — the page still works,
+       the bookings just will not survive a refresh */
+  }
+}
+
+function load() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    if (parsed && Array.isArray(parsed.bookings)) {
+      state = {
+        bookings: parsed.bookings,
+        dayStart: parsed.dayStart ?? toMinutes(9),
+        dayEnd: parsed.dayEnd ?? toMinutes(17),
+        slotLength: parsed.slotLength ?? 30
+      };
+    }
+  } catch (e) {
+    /* corrupted or unreadable — start fresh rather than crash */
+  }
+}
+
+/* ======================================================================
+   DRAWING THE PAGE
+
+   Everything above works out ANSWERS. Everything below puts those
+   answers on the screen.
+
+   render() redraws the whole thing. It gets called every time anything
+   changes — a new booking, a cancelled one, a settings change. Redrawing
+   everything is slightly wasteful but much simpler to get right, and at
+   this size you will never notice.
+   ====================================================================== */
+
+const cal = document.getElementById("cal");
+const listEl = document.getElementById("list");
+const hintEl = document.getElementById("hint");
+
+function render() {
+  renderHint();
+  renderGrid();
+  renderList();
+}
+
+function renderHint() {
+  hintEl.textContent = mode === "visitor"
+    ? "Click any open slot to book it. Green blocks are already taken."
+    : "Owner mode: click a slot to block out your own commitment. Gold blocks are yours.";
+}
+
+/* Builds the grid of clickable squares.
+   Two loops, one inside the other: rows are times, columns are days.
+   This is the same nested-loop idea as a times table. 
+   
+   LEGEND:
+   tr = row, td = slot, th = day of week heading
+   td w/ class="timelabel" is the list of times on the left side of page.
+   */
+
+
+
+
+function renderGrid() {
+  const slots = generateSlots(
+    state.dayStart,
+    state.dayEnd,
+    state.slotLength,
+    /*state.doubleBooked*/);
+  //gets the scrollable part
+  cal.textContent = "";
+
+  
+  const dayLanes = new Map();
+  
+  for (const day of DAYS) {
+    // const th = document.createElement("th");
+    // th.textContent = day.slice(0, 3);
+    // head.appendChild(th);
+    dayLanes.set(
+      day, assignLanes(state.bookings, day)
+    );
+  }
+  const head = document.createElement("tr");
+  const corner = document.createElement("th");
+  corner.className = "timecol";
+  head.appendChild(corner);
+  
+for (const day of DAYS) {
+    const th = document.createElement("th");
+    th.textContent = day.slice(0, 3);
+    head.appendChild(th);
+  }
+
+  cal.appendChild(head);
+
+  for (const [start, end] of slots) {
+    const tr = document.createElement("tr");
+
+    const label = document.createElement("td");
+    label.className = "timelabel";
+    label.textContent = toTimeString(start);
+    tr.appendChild(label);
+
+    for (const day of DAYS) {
+      const td = document.createElement("td");
+      td.className = "slot";
+      
+      // if (findDble) {
+      //   const dble = document.createElement("dble");
+
+      //   td.appendChild(dble);
+      // }
+      const lanes = document.createElement("div");
+      lanes.className = "slot-lanes";
+      const active = state.bookings.filter(b =>
+        b.day === day &&
+        overlaps(start, end, b.start, b.end)
+      );
+      for (let lane = 0; lane < 2; lane++) {
+        const btn = document.createElement("button");
+        btn.className = "cell";
+        const hit = active.find(b =>
+          dayLanes.get(day).get(b.id) === lane
+        );
+        if (hit) {
+          const isStart = hit.start >= start && hit.start < end;
+          btn.classList.add(hit.owner ? "own" : "busy");
+          if (!isStart) btn.classList.add("cont");
+          btn.textContent = isStart
+            ? hit.who + (hit.what ? " · " + hit.what : "")
+            : "";
+          btn.title = hit.who + " — " + toTimeString(hit.start) +
+                      " to " + toTimeString(hit.end);
+          btn.setAttribute("aria-label", "Booked: " + btn.title);
+          btn.disabled = true;
+        // } else if (mode === "owner" && start < state.dayStart) {
+        //   btn.textContent = "";
+        //   btn.title = day + " " + toTimeString(start);
+        } else {
+          btn.textContent = "";
+          btn.title = day + " " + toTimeString(start);
+          btn.setAttribute("aria-label",
+            "Free: " + day + " " + toTimeString(start) + ". Click to book.");
+          btn.addEventListener("click", () => openDialog(day, start, end));
+        }
+        lanes.appendChild(btn);
+      }
+
+
+      // const hit = findClash(state.bookings, day, start, end);
+      // const btn = document.createElement("button");
+      // btn.className = "cell";
+
+
+      // td.appendChild(btn);
+      // tr.appendChild(td);
+      td.appendChild(lanes);
+      tr.appendChild(td);
+    }
+    cal.appendChild(tr);
+  }
+  
+}
+
+function renderList() {
+  listEl.textContent = "";
+
+  if (state.bookings.length === 0) {
+    const p = document.createElement("p");
+    p.className = "empty";
+    p.textContent = "Nothing booked yet. The whole week is open.";
+    listEl.appendChild(p);
+    return;
+  }
+
+  for (const day of DAYS) {
+    const today = bookingsOn(state.bookings, day);
+    if (today.length === 0) continue;
+
+    for (const b of today) {
+      const row = document.createElement("div");
+      row.className = "item" + (b.owner ? " own" : "");
+
+      const left = document.createElement("div");
+      const what = document.createElement("div");
+      what.className = "what";
+      what.textContent = b.who + (b.what ? " — " + b.what : "");
+      const when = document.createElement("div");
+      when.className = "when";
+      when.textContent = b.day + ", " + toTimeString(b.start) +
+                         " to " + toTimeString(b.end) +
+                         "  (" + (b.end - b.start) + " min)";
+      left.appendChild(what);
+      left.appendChild(when);
+
+      const x = document.createElement("button");
+      x.className = "x";
+      x.textContent = "Cancel";
+      x.addEventListener("click", () => {
+        state.bookings = state.bookings.filter(item => item.id !== b.id);
+        save();
+        render();
+      });
+
+      row.appendChild(left);
+      row.appendChild(x);
+      listEl.appendChild(row);
+    }
+  }
+
+  const free = document.createElement("p");
+  free.className = "empty";
+  const bits = [];
+  for (const day of DAYS) {
+    const blocks = freeBlocks(state.bookings, day, state.dayStart, state.dayEnd);
+    const total = blocks.reduce((sum, [s, e]) => sum + (e - s), 0);
+    bits.push(day.slice(0, 3) + " " + (total / 60).toFixed(1) + "h");
+  }
+  free.textContent = "Free time left: " + bits.join(" · ");
+  listEl.appendChild(free);
+}
+
+/* ======================================================================
+   THE BOOKING DIALOG
+   ====================================================================== */
+
+const dlg = document.getElementById("dlg");
+const errEl = document.getElementById("err");
+
+function openDialog(day, start, end) {
+  pending = { day };
+  document.getElementById("dlgTitle").textContent =
+    mode === "owner" ? "Block out this time" : "Book this time";
+  document.getElementById("dlgWhen").textContent =
+    day + ", " + toTimeString(start) + " to " + toTimeString(end);
+  document.getElementById("startT").value = toInputTime(start);
+  document.getElementById("endT").value = toInputTime(end);
+  document.getElementById("who").value =
+    mode === "owner" ? "Me" : "";
+  document.getElementById("what").value = "";
+  document.getElementById("confirmBtn").textContent =
+    mode === "owner" ? "Block it" : "Book it";
+  errEl.textContent = "";
+  dlg.showModal();
+  document.getElementById(mode === "owner" ? "what" : "who").focus();
+}
+
+document.getElementById("cancelBtn").addEventListener("click", () => {
+  dlg.close();
+});
+
+document.getElementById("dlgForm").addEventListener("submit", (ev) => {
+  const start = parseInputTime(document.getElementById("startT").value);
+  const end = parseInputTime(document.getElementById("endT").value);
+  const who = document.getElementById("who").value;
+  const what = document.getElementById("what").value;
+
+  const [ok, reason] = book(
+    state.bookings, pending.day, start, end, who, what,
+    mode === "owner", state.dayStart, state.dayEnd
+  );
+
+  if (!ok) {
+    ev.preventDefault();
+    errEl.textContent = reason;
+    return;
+  }
+
+  save();
+  render();
+});
+
+/* ======================================================================
+   CONTROLS
+   ====================================================================== */
+
+function setMode(next) {
+  mode = next;
+  document.getElementById("mVisitor")
+    .setAttribute("aria-pressed", String(next === "visitor"));
+  document.getElementById("mOwner")
+    .setAttribute("aria-pressed", String(next === "owner"));
+  renderHint();
+}
+
+document.getElementById("mVisitor").addEventListener("click", () => setMode("visitor"));
+document.getElementById("mOwner").addEventListener("click", () => setMode("owner"));
+
+function readSettings() {
+  const s = parseInputTime(document.getElementById("dayStart").value);
+  const e = parseInputTime(document.getElementById("dayEnd").value);
+  const len = parseInt(document.getElementById("slotLen").value, 10);
+  if (s !== null && e !== null && e > s) {
+    state.dayStart = s;
+    state.dayEnd = e;
+  }
+  state.slotLength = len;
+  save();
+  render();
+}
+
+document.getElementById("dayStart").addEventListener("change", readSettings);
+document.getElementById("dayEnd").addEventListener("change", readSettings);
+document.getElementById("slotLen").addEventListener("change", readSettings);
+
+document.getElementById("clearBtn").addEventListener("click", () => {
+  if (state.bookings.length === 0) return;
+  if (confirm("Delete every booking? This cannot be undone.")) {
+    state.bookings = [];
+    save();
+    render();
+  }
+});
+
+document.getElementById("sampleBtn").addEventListener("click", () => {
+  state.bookings = [];
+  const sample = [
+    ["Monday", 9, 0, 10, 30, "CS 101", "Teaching", true],
+    ["Monday", 13, 0, 14, 0, "Lab meeting", "", true],
+    ["Tuesday", 10, 0, 11, 0, "Alex", "Tutoring", false],
+    ["Wednesday", 9, 0, 12, 0, "Writing", "Deep work", true],
+    ["Thursday", 15, 0, 16, 0, "Jordan", "Advising", false]
+  ];
+  for (const [day, sh, sm, eh, em, who, what, owner] of sample) {
+    book(state.bookings, day, toMinutes(sh, sm), toMinutes(eh, em),
+         who, what, owner, state.dayStart, state.dayEnd);
+  }
+  save();
+  render();
+});
+
+document.getElementById("exportBtn").addEventListener("click", () => {
+  const text = JSON.stringify(state, null, 2);
+  navigator.clipboard?.writeText(text).then(
+    () => alert("Copied to the clipboard. Paste it somewhere safe."),
+    () => prompt("Copy this:", text)
+  );
+});
+
+document.getElementById("importBtn").addEventListener("click", () => {
+  const text = prompt("Paste exported data here:");
+  if (!text) return;
+  try {
+    const parsed = JSON.parse(text);
+    if (!parsed || !Array.isArray(parsed.bookings)) throw new Error("bad shape");
+    state = {
+      bookings: parsed.bookings,
+      dayStart: parsed.dayStart ?? toMinutes(9),
+      dayEnd: parsed.dayEnd ?? toMinutes(17),
+      slotLength: parsed.slotLength ?? 30
+    };
+    syncSettingsInputs();
+    save();
+    render();
+  } catch (e) {
+    alert("That did not look like exported booking data.");
+  }
+});
+
+document.getElementById("themeBtn").addEventListener("click", () => {
+  const now = document.documentElement.getAttribute("data-theme");
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const current = now || (prefersDark ? "dark" : "light");
+  document.documentElement.setAttribute(
+    "data-theme", current === "dark" ? "light" : "dark");
+});
+
+function syncSettingsInputs() {
+  document.getElementById("dayStart").value = toInputTime(state.dayStart);
+  document.getElementById("dayEnd").value = toInputTime(state.dayEnd);
+  document.getElementById("slotLen").value = String(state.slotLength);
+}
+
+/* ======================================================================
+   A QUICK SANITY CHECK
+
+   This runs once when the page loads and checks the engine still works.
+   It does not affect the website at all — it just prints a note in the
+   browser console.
+
+   To see it: press F12, then click the "Console" tab.
+
+   Why it is here: if you edit overlaps() or toTimeString() and get it
+   slightly wrong, the page will still LOOK fine but bookings will go
+   strange. This tells you immediately instead of ten minutes later.
+   ====================================================================== */
+
+(function sanityCheck() {
+  const checks = [
+    [overlaps(540, 600, 570, 630) === true, "9-10 and 9:30-10:30 do clash"],
+    [overlaps(540, 600, 600, 660) === false, "9-10 and 10-11 do NOT clash"],
+    [overlaps(540, 660, 570, 600) === true, "a booking inside another clashes"],
+    [toTimeString(540) === "9:00 AM", "540 minutes is 9:00 AM"],
+    [toTimeString(720) === "12:00 PM", "720 minutes is noon"],
+    [toTimeString(0) === "12:00 AM", "0 minutes is midnight"],
+    [generateSlots(540, 660, 30).length === 4, "9 to 11 gives four 30-min slots"]
+  ];
+  const failed = checks.filter(c => !c[0]);
+  if (failed.length === 0) {
+    console.log("%c Engine OK — all " + checks.length + " checks passed ",
+      "background:#2c5f2d;color:#fff;padding:2px 6px;border-radius:3px");
+  } else {
+    console.error("Something in the engine is broken:",
+      failed.map(f => f[1]));
+  }
+})();
+
+/* ===================================================================== */
+
+load();
+syncSettingsInputs();
+setMode("visitor");
+render();
+</script>
+</body>
+</html>

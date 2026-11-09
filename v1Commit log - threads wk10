@@ -1,0 +1,27 @@
+Commit logs for website project:
+Grant Dietzenbach
+
+
+Log:
+10/26/2026: - current name: (Working) SVbooking-site.html
+   - Changed return section in 2nd if statement on line 648
+10/27/26
+   - Changed return statement on line 730
+      - changed a string
+      - changed booleon (line 728) to true
+   - Changed return from null to true on line 658
+         -changed back-
+      - changed return from true to b on line 648
+   - Changed css of an element to track where cell item is
+      - changed .cell font-size: from .74rem; to 4rem; line 301
+         -changed back (ch bk)-
+      - changed .mode-btn border: 1px to 20px on line 193
+         -ch bk-
+   *ADDED line w/ comment on lin 189 (+1 to previous assortments to keep track)*
+      - changed td.timlabel font-size: .74rem; to 5rem; on line 283
+         -ch bk-
+   - Changed findClash to findDouble and clash to double. ~lines 654, 727 to 730, and 859
+   - Changed line 847, and 849, added double
+   - Changed line 662 to 668, added an extra function that should try to account for doublebookings.
+      - name: findDoubleB
+   

@@ -1,0 +1,12 @@
+Question for Son Vu
+
+Why do we have variables that arn't listed as arguemnts in a function but have dot notation?
+Ex:
+function findClash(bookings, day, start, end) {
+  for (const b of bookings) {
+    if (b.day !== day) continue;
+    if (overlaps(start, end, b.start, b.end)) return b;
+  }
+  return null;
+}
+
