@@ -74,7 +74,7 @@
     -webkit-text-size-adjust: 100%;
   }
 
-  .wrap { max-width: 980px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+  .wrap { max-width: 980px; margin-left: 200px; margin-right: auto; padding: 1.5rem 1rem 4rem; }
 
   header { margin-bottom: 1.5rem; }
 
@@ -164,6 +164,18 @@
 
   /* --- the grid --- */
   .scroller { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  .SideBar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 100%;
+    background-color: var(--surface);
+    border-right: 1px solid var(--line);
+    padding: 1rem;
+    box-sizing: border-box;
+  }
 
   table.cal {
     border-collapse: separate;
@@ -373,6 +385,12 @@
 <body>
 <div>
   <div class="wrap">
+
+    <div class="SideBar">
+      <h1>SIDE BAR</h1>
+      <div class="tsk" id="tsk">
+      </div>
+    </div>
 
     <header>
       <h1>GDdev Booking</h1>
