@@ -387,13 +387,18 @@
   <div class="wrap">
 
     <div class="SideBar">
-      <h1>SIDE BAR</h1>
+      <h1>TASKS:</h1>
+      <div class="sub">
+        <a href="index.html" style ="color: aquamarine;">
+            Go to Home
+        </a>
+      </div>
       <div class="tsk" id="tsk">
       </div>
     </div>
 
     <header>
-      <h1>GDdev Booking</h1>
+      <h1>Schedule Hub</h1>
       <p class="sub">Pick an open slot and it’s yours.</p>
     </header>
 
@@ -856,7 +861,7 @@ for (const day of DAYS) {
     th.textContent = day.slice(0, 3);
     head.appendChild(th);
   }
-
+  
   cal.appendChild(head);
 
   for (const [start, end] of slots) {
