@@ -662,10 +662,12 @@ function assignLanes(bookings, day) {
     if (b.start >= laneEnds[0]) {
       lanes.set(b.id, 0);
       laneEnds[0] = b.end;
+      let max = 1;
     }
     else if (b.start >= laneEnds[1]) {
       lanes.set(b.id, 1);
       laneEnds[1] = b.end;
+      let max = 2;
     }
   }
   return lanes;
@@ -887,7 +889,7 @@ for (const day of DAYS) {
         b.day === day &&
         overlaps(start, end, b.start, b.end)
       );
-      for (let lane = 0; lane < 2; lane++) {
+      for (let lane = 0; lane < max; lane++) {
         const btn = document.createElement("button");
         btn.className = "cell";
         const hit = active.find(b =>
