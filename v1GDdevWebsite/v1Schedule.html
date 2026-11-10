@@ -662,12 +662,13 @@ function assignLanes(bookings, day) {
     if (b.start >= laneEnds[0]) {
       lanes.set(b.id, 0);
       laneEnds[0] = b.end;
-      let max = 1;
+      //let max = 1;
     }
-    else if (b.start >= laneEnds[1]) {
+    //else if (b.start >= laneEnds[1]) {
+    else {  
       lanes.set(b.id, 1);
       laneEnds[1] = b.end;
-      let max = 2;
+      //let max = 2;
     }
   }
   return lanes;
@@ -858,13 +859,13 @@ function renderGrid() {
   corner.className = "timecol";
   head.appendChild(corner);
   
-for (const day of DAYS) {
-    const th = document.createElement("th");
-    th.textContent = day.slice(0, 3);
-    head.appendChild(th);
-  }
-  
-  cal.appendChild(head);
+  for (const day of DAYS) {
+      const th = document.createElement("th");
+      th.textContent = day.slice(0, 3);
+      head.appendChild(th);
+    }
+    
+    cal.appendChild(head);
 
   for (const [start, end] of slots) {
     const tr = document.createElement("tr");
@@ -889,7 +890,8 @@ for (const day of DAYS) {
         b.day === day &&
         overlaps(start, end, b.start, b.end)
       );
-      for (let lane = 0; lane < max; lane++) {
+      let maxSlot = 1;
+      for (let lane = 0; lane < maxSlot; lane++) {
         const btn = document.createElement("button");
         btn.className = "cell";
         const hit = active.find(b =>
@@ -909,7 +911,8 @@ for (const day of DAYS) {
         // } else if (mode === "owner" && start < state.dayStart) {
         //   btn.textContent = "";
         //   btn.title = day + " " + toTimeString(start);
-        } else {
+        } 
+        else {
           btn.textContent = "";
           btn.title = day + " " + toTimeString(start);
           btn.setAttribute("aria-label",
