@@ -74,7 +74,7 @@
     -webkit-text-size-adjust: 100%;
   }
 
-  .wrap { max-width: 980px; margin-left: 200px; margin-right: auto; padding: 1.5rem 1rem 4rem; }
+  .wrap { margin-left: 200px; margin-right: auto; padding: 1.5rem 1rem 4rem; }
 
   header { margin-bottom: 1.5rem; }
 
@@ -917,7 +917,7 @@ function renderGrid() {
       // }
       const lanes = document.createElement("div");
       lanes.className = "slot-lanes";
-      
+
       const active = state.bookings.filter(b =>
         b.day === day &&
         overlaps(start, end, b.start, b.end)
