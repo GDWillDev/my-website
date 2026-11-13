@@ -210,23 +210,26 @@
     font-variant-numeric: tabular-nums;
   }
 
-  td.slot { padding: 0;}
-
+  td.slot {
+    padding: 0;
+  }
+  
   .slot-lanes {
     display: flex;
     gap: 2px;
     width: 100%;
   }
-
+  
   .slot-lanes .cell {
     flex: 1;
     min-width: 0;
   }
 
-/* The 'cell' seems to be defining each calender time slot */
+  /* The 'cell' seems to be defining each calender time slot */
   .cell {
     width: 100%;
     min-height: 34px;
+    max-height: 1rem;
     border: 1px solid var(--line);
     border-radius: 6px;
     background: var(--surface);
@@ -393,6 +396,7 @@
     <div class="wrap">
       
       <div class="SideBar" id="SideBar">
+<!-- SidebarSub function is to revert content -->
         <div class="SidebarSub">
           <a href="index.html" style ="color: aquamarine;">
             Go to Home
