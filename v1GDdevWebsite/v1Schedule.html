@@ -655,24 +655,55 @@ function bookingsOn(bookings, day) {
 }
 
 function assignLanes(bookings, day) {
+  let laneEnds = []
+  let group = []
+  let groupEnd = -Infinity;
+
   const today = bookingsOn(bookings, day);
-  const laneEnds = [-Infinity, -Infinity];
   const lanes = new Map();
-  for (const b of today) {
-    if (b.start >= laneEnds[0]) {
-      lanes.set(b.id, 0);
-      laneEnds[0] = b.end;
-      //let max = 1;
-    }
-    //else if (b.start >= laneEnds[1]) {
-    else {  
-      lanes.set(b.id, 1);
-      laneEnds[1] = b.end;
-      //let max = 2;
-    }
+  const width = new Map();
+
+  function closeGroup() {
+    for (const id of group) width.set(id, laneEnds.length);
+      laneEnds = [];
+      group = [];
   }
-  return lanes;
+  for (const b of today) {
+    if (b.start >= groupEnd) closeGroup();
+    let lane = laneEnds.findIndex(e => b.start >= e);
+    if (lane === -1) {
+      lane = laneEnds.length;
+      laneEnds.push(b.end);
+    }
+    else {
+      laneEnds[lane] = b.end;
+    }
+    lanes.set(b.id, lane);
+    group.push(b.id);
+    groupEnd = Math.max(groupEnd, b.end);
+  }
+  closeGroup();
+  return { lanes, width };
 }
+//   const today = bookingsOn(bookings, day);
+//   const laneEnds = [-Infinity, -Infinity];
+//   const lanes = new Map();
+//   for (const b of today) {
+//     if (b.start >= laneEnds[0]) {
+//       lanes.set(b.id, 0);
+//       laneEnds[0] = b.end;
+//       let maxLanes = 1;
+//     }
+//     //else if (b.start >= laneEnds[1]) {
+//     else {  
+//       lanes.set(b.id, 1);
+//       laneEnds[1] = b.end;
+//       let maxLanes = 2;
+//     }
+//   }
+//   return lanes
+//   return maxLanes
+// }
 
 
 /* ---- Finding the gaps ------------------------------------------------
@@ -886,17 +917,20 @@ function renderGrid() {
       // }
       const lanes = document.createElement("div");
       lanes.className = "slot-lanes";
+      
       const active = state.bookings.filter(b =>
         b.day === day &&
         overlaps(start, end, b.start, b.end)
       );
+
+      const {lanes: laneOf, width} = dayLanes.get(day);
       let maxSlot = 1;
+      for (const b of active) maxSlot = Math.max(maxSlot, width.get(b.id));
+
       for (let lane = 0; lane < maxSlot; lane++) {
         const btn = document.createElement("button");
         btn.className = "cell";
-        const hit = active.find(b =>
-          dayLanes.get(day).get(b.id) === lane
-        );
+        const hit = active.find(b => laneOf.get(b.id) === lane);
         if (hit) {
           const isStart = hit.start >= start && hit.start < end;
           btn.classList.add(hit.owner ? "own" : "busy");
