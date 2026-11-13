@@ -74,7 +74,7 @@
     -webkit-text-size-adjust: 100%;
   }
 
-  .wrap { margin-left: 200px; margin-right: auto; padding: 1.5rem 1rem 4rem; }
+  .wrap {margin-left: 200px; margin-right: auto; padding: 1.5rem 1rem 4rem; }
 
   header { margin-bottom: 1.5rem; }
 
@@ -167,6 +167,8 @@
 
   .SideBar {
     position: fixed;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    direction: rtl;
     top: 0;
     left: 0;
     width: 200px;
@@ -175,6 +177,10 @@
     border-right: 1px solid var(--line);
     padding: 1rem;
     box-sizing: border-box;
+  }
+
+  .SidebarSub {
+    direction: ltr;
   }
 
   table.cal {
@@ -264,7 +270,7 @@
   .cell.cont { opacity: .82; }
 
   /* --- list --- */
-  .list { margin-top: 2rem; }
+  .list { margin-top: 0rem; }
 
   h2 {
     font-family: ui-serif, Georgia, serif;
@@ -284,23 +290,23 @@
     justify-content: space-between;
     gap: .75rem;
     align-items: center;
-    flex-wrap: wrap;
+    /* flex-wrap: wrap; */
   }
 
   .item.own { border-left-color: var(--mine); }
 
-  .item .when { font-size: .8rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
-  .item .what { font-weight: 600; }
+  .item .when {font-size: .8rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  .item .what {font-weight: 600; }
 
   .x {
     background: none;
-    border: 1px solid var(--line);
+    border: none;
     color: var(--danger);
-    border-radius: 6px;
-    padding: .25rem .5rem;
+    border-radius: none;
+    padding: 0rem 0rem;
     cursor: pointer;
     font: inherit;
-    font-size: .78rem;
+    font-size: .65rem;
   }
 
   .empty { color: var(--ink-soft); font-style: italic; font-size: .9rem; }
@@ -383,15 +389,20 @@
 </style>
 </head>
 <body>
-<div>
-  <div class="wrap">
-
-    <div class="SideBar">
-      <h1>TASKS:</h1>
-      <div class="sub">
-        <a href="index.html" style ="color: aquamarine;">
+  <div>
+    <div class="wrap">
+      
+      <div class="SideBar" id="SideBar">
+        <div class="SidebarSub">
+          <a href="index.html" style ="color: aquamarine;">
             Go to Home
-        </a>
+          </a>
+          <h1>TASKS:</h1>
+          <div class="sub">
+            <section class="list">
+              <div id="list"></div>
+            </section>
+        </div>
       </div>
       <div class="tsk" id="tsk">
       </div>
@@ -442,10 +453,6 @@
       <span><span class="key" style="background:var(--mine)"></span>My own commitment</span>
     </div>
 
-    <section class="list">
-      <h2>Everything booked</h2>
-      <div id="list"></div>
-    </section>
 
     <footer>
       <p>Bookings are saved in this browser only. Nothing is sent anywhere.
@@ -863,8 +870,6 @@ function renderHint() {
    */
 
 
-
-
 function renderGrid() {
   const slots = generateSlots(
     state.dayStart,
@@ -998,14 +1003,15 @@ function renderList() {
       const when = document.createElement("div");
       when.className = "when";
       when.textContent = b.day + ", " + toTimeString(b.start) +
-                         " to " + toTimeString(b.end) +
-                         "  (" + (b.end - b.start) + " min)";
+      " to " + toTimeString(b.end) +
+      "  (" + (b.end - b.start) + " min)";
       left.appendChild(what);
       left.appendChild(when);
 
+      // cancel booking button:
       const x = document.createElement("button");
       x.className = "x";
-      x.textContent = "Cancel";
+      x.textContent = "X";
       x.addEventListener("click", () => {
         state.bookings = state.bookings.filter(item => item.id !== b.id);
         save();
